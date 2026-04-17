@@ -230,10 +230,10 @@ class PlayerAgent:
         threshold = 0.64
         if lead <= -3:
             threshold = 0.50
-        elif lead <= 0:
-            threshold = 0.58
-        elif 1 <= lead <= 3:
-            threshold = 0.64
+        elif lead <= 1:
+            threshold = 0.54
+        elif 2 <= lead <= 3:
+            threshold = 0.62
         elif lead >= 4:
             threshold = 0.69
 
@@ -273,10 +273,10 @@ class PlayerAgent:
             elif mv.move_type == enums.MoveType.PRIME:
                 best_prime_gain = max(best_prime_gain, gain)
 
-        if lead >= 1:
-            if best_carpet_gain >= 4 and p < max(0.66, top_p - 0.02):
+        if lead >= 2:
+            if best_carpet_gain >= 4 and p < max(0.64, top_p - 0.02):
                 return True
-            if best_prime_gain >= 1 and p < 0.70:
+            if best_prime_gain >= 1 and p < 0.68:
                 return True
 
         if lead >= 3:
@@ -301,7 +301,7 @@ class PlayerAgent:
                 immediate_gain = nb.player_worker.points - my_points
                 score += 6.0 * immediate_gain
                 future_carpet_gain = self._best_future_carpet_gain(nb)
-                score += 1.8 * future_carpet_gain
+                score += 2.1 * future_carpet_gain
 
             if mv.move_type == enums.MoveType.CARPET:
                 score += 12.0
@@ -315,11 +315,11 @@ class PlayerAgent:
                 p = float(self.belief[y * 8 + x])
                 score += 20.0 * p
                 score -= 6.0
-                if lead <= 0:
-                    score += 4.0 * p
+                if lead <= 1:
+                    score += 6.0 * p
                 if lead <= -3:
-                    score += 8.0 * p
-                if 1 <= lead <= 3:
+                    score += 10.0 * p
+                if 2 <= lead <= 3:
                     score -= 1.0 * p
             else:
                 score += 0.5
@@ -327,11 +327,11 @@ class PlayerAgent:
                     next_rat_dist = self._best_belief_distance(nb.player_worker.position)
                     rat_progress = current_rat_dist - next_rat_dist
 
-                    score -= 2.0
+                    score -= 3.0
                     score += 1.8 * rat_progress
-                    score += 1.2 * max(0, future_carpet_gain - 2)
+                    score += 1.5 * max(0, future_carpet_gain - 2)
                     if rat_progress <= 0 and future_carpet_gain <= 2:
-                        score -= 3.5
+                        score -= 5.0
 
             new_pos = self._move_destination(board_obj, mv)
             if new_pos is not None:
